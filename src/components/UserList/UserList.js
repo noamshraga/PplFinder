@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Text from "components/Text";
 import Spinner from "components/Spinner";
 import CheckBox from "components/CheckBox";
@@ -8,6 +8,8 @@ import * as S from "./style";
 
 const UserList = ({ users, isLoading }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
+  const [checkedBoxed, setCheckedBoxed] = useState([]);
+  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem("Favorites")));
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);
@@ -17,21 +19,74 @@ const UserList = ({ users, isLoading }) => {
     setHoveredUserId();
   };
 
+  const handleAddOrRemoveFilter = (value,addOrRemove) => {
+    let newCheckBoxed = [];
+
+    if(addOrRemove === "add") {
+      checkedBoxed.forEach(item => {
+        newCheckBoxed.push(item);
+      })
+      newCheckBoxed.push(value);
+    } else {
+      checkedBoxed.forEach(item => {
+        if (value !== item) {
+          newCheckBoxed.push(item);
+        }
+      })
+    }
+    setCheckedBoxed(newCheckBoxed);
+  }
+
+  const checkConditionToVisible = (index) => {
+    return index === hoveredUserId || favorites.includes(users[index])
+  }
+
+  const handleOnClickFavorite = (index) => {
+    let newFavorites = []
+    if(favorites.includes(users[index])) {
+      favorites.forEach(item => {
+        if(users[index] != item){
+          newFavorites.push(item)
+        }
+      })
+    }
+    else{
+       favorites.forEach(item => {
+          newFavorites.push(item);
+       })
+      newFavorites.push(users[index])
+
+    }
+
+    setFavorites(newFavorites)
+    localStorage.setItem("Favorites", JSON.stringify(newFavorites))
+  }
+
   return (
     <S.UserList>
       <S.Filters>
-        <CheckBox value="BR" label="Brazil" />
-        <CheckBox value="AU" label="Australia" />
-        <CheckBox value="CA" label="Canada" />
-        <CheckBox value="DE" label="Germany" />
+        <CheckBox value="BR" label="Brazil" onChangeFromParent={handleAddOrRemoveFilter}/>
+        <CheckBox value="AU" label="Australia" onChangeFromParent={handleAddOrRemoveFilter}/>
+        <CheckBox value="CA" label="Canada" onChangeFromParent={handleAddOrRemoveFilter}/>
+        <CheckBox value="DE" label="Germany" onChangeFromParent={handleAddOrRemoveFilter}/>
+        <CheckBox value="FI" label="Finland" onChangeFromParent={handleAddOrRemoveFilter}/>
       </S.Filters>
       <S.List>
-        {users.map((user, index) => {
+        {users
+        .filter(user => {
+          if(checkedBoxed.length === 0) {
+            return true;
+          }
+
+          return checkedBoxed.includes(user.location.country)
+        })
+        .map((user, index) => {
           return (
             <S.User
               key={index}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
+              onClick={() => handleOnClickFavorite(index)}
             >
               <S.UserPicture src={user?.picture.large} alt="" />
               <S.UserInfo>
@@ -46,7 +101,7 @@ const UserList = ({ users, isLoading }) => {
                   {user?.location.city} {user?.location.country}
                 </Text>
               </S.UserInfo>
-              <S.IconButtonWrapper isVisible={index === hoveredUserId}>
+              <S.IconButtonWrapper isVisible={checkConditionToVisible(index)}>
                 <IconButton>
                   <FavoriteIcon color="error" />
                 </IconButton>
@@ -65,3 +120,4 @@ const UserList = ({ users, isLoading }) => {
 };
 
 export default UserList;
+

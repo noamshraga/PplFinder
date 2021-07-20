@@ -10,10 +10,20 @@ export const usePeopleFetch = () => {
   }, []);
 
   async function fetchUsers() {
-    setIsLoading(true);
-    const response = await axios.get(`https://randomuser.me/api/?results=25&page=1`);
-    setIsLoading(false);
-    setUsers(response.data.results);
+      setIsLoading(true);
+      const response = await axios.get(`https://randomuser.me/api/?results=25&page=1`);
+      setIsLoading(false);
+      let newUsersList = [];
+
+      users.forEach(item => {
+          newUsersList.push(item);
+      })
+
+    response.data.results.forEach(item => {
+      newUsersList.push(item);
+      })
+
+     setUsers(newUsersList);
   }
 
   return { users, isLoading, fetchUsers };
