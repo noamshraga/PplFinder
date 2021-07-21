@@ -7,7 +7,7 @@ import * as S from "../../components/UserList/style";
 import * as H from "../../pages/Home/style";
 
 const Favorites = () => {
-  const localS = JSON.parse(localStorage.getItem("Favorites"));
+  const localS = localStorage.getItem("Favorites");
   const parseLocalS = localS ? JSON.parse(localS) : [];
   const [favorites, setFavorites] = useState(parseLocalS);
 
