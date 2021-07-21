@@ -9,7 +9,9 @@ import * as S from "./style";
 const UserList = ({ users, isLoading }) => {
   const [hoveredUserId, setHoveredUserId] = useState();
   const [checkedBoxed, setCheckedBoxed] = useState([]);
-  const [favorites, setFavorites] = useState(JSON.parse(localStorage.getItem("Favorites")));
+  const localS = localStorage.getItem("Favorites");
+  const parseLocalS = localS ? JSON.parse(localS) : [];
+  const [favorites, setFavorites] = useState(parseLocalS);
 
   const handleMouseEnter = (index) => {
     setHoveredUserId(index);

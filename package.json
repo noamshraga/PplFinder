@@ -1,5 +1,5 @@
 {
-  "homepage": "https://noamshraga.github.io/pplFinder",
+  "homepage": "https://noamshraga.github.io/PplFinder/",
   "name": "ppl-finder",
   "version": "1.0.7",
   "bin": "./bin/cli.js",
